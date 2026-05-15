@@ -140,10 +140,25 @@ export default function Explorar() {
   const startX   = useRef(0)
   const startY   = useRef(0)
   const cardRef  = useRef(null)
+  const frameRef = useRef(null)
+  const touchRef = useRef({ x: 0, y: 0 })
 
   const likeOpacity = drag.active && drag.x > 20  ? Math.min(drag.x / 80, 1) : 0
   const nopeOpacity = drag.active && drag.x < -20 ? Math.min(-drag.x / 80, 1) : 0
-  const cardDragStyle = drag.active ? { transform: `translate(${drag.x}px,${drag.y}px) rotate(${drag.x * 0.07}deg)` } : {}
+  const cardDragStyle = drag.active ? { transform: `translate3d(${drag.x}px,${drag.y}px,0) rotate(${drag.x * 0.07}deg)` } : {}
+
+  const scheduleTouchDrag = useCallback((x, y) => {
+    touchRef.current = { x, y }
+    if (frameRef.current) return
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = null
+      setDrag({
+        x: touchRef.current.x - startX.current,
+        y: touchRef.current.y - startY.current,
+        active: true,
+      })
+    })
+  }, [])
 
   // Register non-passive touchmove so preventDefault blocks browser scroll,
   // and update drag state directly without relying on React synthetic events.
@@ -154,11 +169,17 @@ export default function Explorar() {
       if (!dragging.current) return
       e.preventDefault()
       const touch = e.touches[0]
-      setDrag({ x: touch.clientX - startX.current, y: touch.clientY - startY.current, active: true })
+      scheduleTouchDrag(touch.clientX, touch.clientY)
     }
     el.addEventListener('touchmove', handler, { passive: false })
-    return () => el.removeEventListener('touchmove', handler)
-  })
+    return () => {
+      el.removeEventListener('touchmove', handler)
+      if (frameRef.current) {
+        cancelAnimationFrame(frameRef.current)
+        frameRef.current = null
+      }
+    }
+  }, [scheduleTouchDrag])
 
   const advance = useCallback(() => {
     setFly(null)
@@ -211,7 +232,11 @@ export default function Explorar() {
          : e.changedTouches ? [e.changedTouches[0].clientX, e.changedTouches[0].clientY]
          : [e.clientX, e.clientY]
   }
-  const onDown = (e) => { dragging.current = true; [startX.current, startY.current] = getCoords(e) }
+  const onDown = (e) => {
+    if (e.touches && e.touches.length > 1) return
+    dragging.current = true
+    ;[startX.current, startY.current] = getCoords(e)
+  }
   const onMove = (e) => {
     if (!dragging.current) return
     const [cx, cy] = getCoords(e)
@@ -220,6 +245,10 @@ export default function Explorar() {
   const onUp = (e) => {
     if (!dragging.current) return
     dragging.current = false
+    if (frameRef.current) {
+      cancelAnimationFrame(frameRef.current)
+      frameRef.current = null
+    }
     const [cx, cy] = getCoords(e)
     const dx = cx - startX.current, dy = cy - startY.current
     if      (dx >  88) triggerSwipe('right')
@@ -283,12 +312,15 @@ export default function Explorar() {
               style={{
                 zIndex: 1,
                 touchAction: 'none',
+                willChange: 'transform',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
                 ...(fly ? FLY[fly] : {}),
                 ...(drag.active && !fly ? cardDragStyle : {}),
                 ...(!drag.active && !fly ? { transition: 'transform .32s cubic-bezier(.34,1.56,.64,1)' } : {}),
               }}
               onMouseDown={onDown} onMouseMove={onMove} onMouseUp={onUp} onMouseLeave={onUp}
-              onTouchStart={onDown} onTouchEnd={onUp}
+              onTouchStart={onDown} onTouchEnd={onUp} onTouchCancel={onUp}
             >
               <img src={perfil.img} className="w-full h-full object-cover absolute inset-0" alt={perfil.nombre} draggable={false} />
 
