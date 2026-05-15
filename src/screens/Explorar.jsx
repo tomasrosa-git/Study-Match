@@ -126,10 +126,10 @@ function calcMatch(perfil, profile) {
 }
 
 export default function Explorar() {
-  const { showToast, showMatch, profile, addMatch, addSeenProfile, seenProfiles } = useApp()
+  const { showToast, showMatch, profile, addMatch, addSeenProfile, seenProfiles, clearSeen } = useApp()
 
   // Compute deck once at mount — filter profiles already seen in previous sessions
-  const [deck] = useState(() => PERFILES.filter(p => !seenProfiles.includes(p.nombre)))
+  const [deck, setDeck] = useState(() => PERFILES.filter(p => !seenProfiles.includes(p.nombre)))
 
   const [index, setIndex] = useState(0)
   const [done, setDone]   = useState(() => PERFILES.filter(p => !seenProfiles.includes(p.nombre)).length === 0)
@@ -140,6 +140,7 @@ export default function Explorar() {
   const startX   = useRef(0)
   const startY   = useRef(0)
   const cardRef  = useRef(null)
+  const pointerId = useRef(null)
   const frameRef = useRef(null)
   const touchRef = useRef({ x: 0, y: 0 })
 
@@ -147,7 +148,7 @@ export default function Explorar() {
   const nopeOpacity = drag.active && drag.x < -20 ? Math.min(-drag.x / 80, 1) : 0
   const cardDragStyle = drag.active ? { transform: `translate3d(${drag.x}px,${drag.y}px,0) rotate(${drag.x * 0.07}deg)` } : {}
 
-  const scheduleTouchDrag = useCallback((x, y) => {
+  const scheduleDrag = useCallback((x, y) => {
     touchRef.current = { x, y }
     if (frameRef.current) return
     frameRef.current = requestAnimationFrame(() => {
@@ -160,26 +161,12 @@ export default function Explorar() {
     })
   }, [])
 
-  // Register non-passive touchmove so preventDefault blocks browser scroll,
-  // and update drag state directly without relying on React synthetic events.
-  useEffect(() => {
-    const el = cardRef.current
-    if (!el) return
-    const handler = (e) => {
-      if (!dragging.current) return
-      e.preventDefault()
-      const touch = e.touches[0]
-      scheduleTouchDrag(touch.clientX, touch.clientY)
+  useEffect(() => () => {
+    if (frameRef.current) {
+      cancelAnimationFrame(frameRef.current)
+      frameRef.current = null
     }
-    el.addEventListener('touchmove', handler, { passive: false })
-    return () => {
-      el.removeEventListener('touchmove', handler)
-      if (frameRef.current) {
-        cancelAnimationFrame(frameRef.current)
-        frameRef.current = null
-      }
-    }
-  }, [scheduleTouchDrag])
+  }, [])
 
   const advance = useCallback(() => {
     setFly(null)
@@ -192,9 +179,14 @@ export default function Explorar() {
   }, [deck.length])
 
   const triggerSwipe = useCallback((dir) => {
+    const perfil = deck[index]
+    if (!perfil) {
+      setDone(true)
+      return
+    }
+
     setFly(dir)
     setDrag({ x: 0, y: 0, active: false })
-    const perfil = deck[index]
     const result = calcMatch(perfil, profile)
 
     // Mark as seen in every case
@@ -227,30 +219,41 @@ export default function Explorar() {
     setTimeout(advance, 440)
   }, [index, deck, showToast, showMatch, advance, profile, addMatch, addSeenProfile])
 
-  function getCoords(e) {
-    return e.touches        ? [e.touches[0].clientX,        e.touches[0].clientY]
-         : e.changedTouches ? [e.changedTouches[0].clientX, e.changedTouches[0].clientY]
-         : [e.clientX, e.clientY]
-  }
-  const onDown = (e) => {
-    if (e.touches && e.touches.length > 1) return
+  const onPointerDown = (e) => {
+    if (fly) return
+    if (!e.isPrimary) return
+    if (e.pointerType === 'mouse' && e.button !== 0) return
+    if (e.target instanceof Element && e.target.closest('button')) return
     dragging.current = true
-    ;[startX.current, startY.current] = getCoords(e)
+    pointerId.current = e.pointerId
+    setDrag({ x: 0, y: 0, active: false })
+    startX.current = e.clientX
+    startY.current = e.clientY
+    e.currentTarget.setPointerCapture?.(e.pointerId)
   }
-  const onMove = (e) => {
-    if (!dragging.current) return
-    const [cx, cy] = getCoords(e)
-    setDrag({ x: cx - startX.current, y: cy - startY.current, active: true })
+  const onPointerMove = (e) => {
+    if (!dragging.current || e.pointerId !== pointerId.current) return
+    scheduleDrag(e.clientX, e.clientY)
   }
-  const onUp = (e) => {
-    if (!dragging.current) return
+  const endPointerDrag = (e, canceled = false) => {
+    if (!dragging.current || e.pointerId !== pointerId.current) return
+    const activePointerId = pointerId.current
+    const el = cardRef.current
+    if (el && activePointerId !== null && el.hasPointerCapture?.(activePointerId)) {
+      el.releasePointerCapture(activePointerId)
+    }
     dragging.current = false
+    pointerId.current = null
     if (frameRef.current) {
       cancelAnimationFrame(frameRef.current)
       frameRef.current = null
     }
-    const [cx, cy] = getCoords(e)
-    const dx = cx - startX.current, dy = cy - startY.current
+    if (canceled) {
+      setDrag({ x: 0, y: 0, active: false })
+      return
+    }
+    const dx = e.clientX - startX.current
+    const dy = e.clientY - startY.current
     if      (dx >  88) triggerSwipe('right')
     else if (dx < -88) triggerSwipe('left')
     else if (dy < -80) triggerSwipe('up')
@@ -288,7 +291,11 @@ export default function Explorar() {
             <button className="bg-primary text-white text-sm font-bold px-8 py-3 rounded-full mt-1 hover:bg-primary-dark transition active:scale-95"
               style={{ boxShadow: '0 4px 20px rgba(37,99,235,.35)' }}
               onClick={() => {
-                // Reset local state — context seenProfiles persists so next session also filtered
+                // Reset all cards, including previously seen ones.
+                clearSeen()
+                setDeck(PERFILES)
+                setFly(null)
+                setDrag({ x: 0, y: 0, active: false })
                 setDone(false)
                 setIndex(0)
               }}>
@@ -319,8 +326,10 @@ export default function Explorar() {
                 ...(drag.active && !fly ? cardDragStyle : {}),
                 ...(!drag.active && !fly ? { transition: 'transform .32s cubic-bezier(.34,1.56,.64,1)' } : {}),
               }}
-              onMouseDown={onDown} onMouseMove={onMove} onMouseUp={onUp} onMouseLeave={onUp}
-              onTouchStart={onDown} onTouchEnd={onUp} onTouchCancel={onUp}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={e => endPointerDrag(e)}
+              onPointerCancel={e => endPointerDrag(e, true)}
             >
               <img src={perfil.img} className="w-full h-full object-cover absolute inset-0" alt={perfil.nombre} draggable={false} />
 
