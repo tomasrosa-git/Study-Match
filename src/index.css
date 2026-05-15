@@ -83,6 +83,12 @@ h1, h2, h3, h4, h5, h6, p { margin: 0; }
 }
 .pulse-dot { animation: pulseDot 1.8s ease-in-out infinite; }
 
+/* ── Typing dots (chat IA) ──────────────────────── */
+@keyframes typingDot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30%            { transform: translateY(-5px); opacity: 1; }
+}
+
 /* ── Form inputs ────────────────────────────────── */
 .sm-input {
   width: 100%;

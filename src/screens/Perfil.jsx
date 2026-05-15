@@ -30,12 +30,12 @@ const CARRERAS = [
 const AÑOS = ['1er año', '2do año', '3er año', '4to año', '5to año', '6to año']
 
 const OBJETIVOS = [
-  { id: 'regular',   label: 'Estudio regular',    emoji: '📚' },
-  { id: 'tp',        label: 'Grupo TP',            emoji: '👥' },
-  { id: 'apuntes',   label: 'Intercambio apuntes', emoji: '📝' },
-  { id: 'finales',   label: 'Preparar finales',    emoji: '🎯' },
-  { id: 'exposicion',label: 'Exposición oral',     emoji: '🎤' },
-  { id: 'problemas', label: 'Resolver problemas',  emoji: '🧩' },
+  { id: 'regular',    label: 'Estudio regular',    icon: 'menu_book' },
+  { id: 'tp',         label: 'Grupo TP',            icon: 'groups' },
+  { id: 'apuntes',    label: 'Intercambio apuntes', icon: 'description' },
+  { id: 'finales',    label: 'Preparar finales',    icon: 'emoji_events' },
+  { id: 'exposicion', label: 'Exposición oral',     icon: 'record_voice_over' },
+  { id: 'problemas',  label: 'Resolver problemas',  icon: 'psychology' },
 ]
 
 const DISPONIBILIDAD_OPTS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábados', 'Domingos']
@@ -98,8 +98,6 @@ export default function Perfil() {
   const [disponibilidad, setDisponibilidad] = useState(profile.disponibilidad || [])
   const [estiloEstudio, setEstiloEstudio]   = useState(profile.estiloEstudio || 'mixto')
   const [turno,        setTurno]        = useState(profile.turno || 'tarde')
-  const [instagram,    setInstagram]    = useState(profile.instagram || '')
-  const [linkedin,     setLinkedin]     = useState(profile.linkedin || '')
 
   function addMateria(e) {
     if (e.key !== 'Enter') return
@@ -122,7 +120,7 @@ export default function Perfil() {
   }
 
   function handleSave() {
-    saveProfile({ nombre, universidad, carrera, año, materias, objetivos, bio, disponibilidad, estiloEstudio, turno, instagram, linkedin })
+    saveProfile({ nombre, universidad, carrera, año, materias, objetivos, bio, disponibilidad, estiloEstudio, turno })
     showToast('✅ Perfil guardado exitosamente')
   }
 
@@ -175,7 +173,7 @@ export default function Perfil() {
         {/* Form */}
         <div className="flex flex-col gap-4 px-5">
 
-          {/* ── Sección: Datos personales ── */}
+          {/* ── Datos personales ── */}
           <p className="text-[11px] font-bold text-on-surface-muted tracking-widest uppercase mt-1">Datos personales</p>
 
           <Field label="Nombre completo">
@@ -205,7 +203,7 @@ export default function Perfil() {
             </div>
           </div>
 
-          {/* ── Sección: Estudio ── */}
+          {/* ── Estilo de estudio ── */}
           <p className="text-[11px] font-bold text-on-surface-muted tracking-widest uppercase mt-2">Estilo de estudio</p>
 
           <Field label="Modalidad preferida">
@@ -276,7 +274,7 @@ export default function Perfil() {
             </div>
           </Field>
 
-          {/* ── Sección: Materias y objetivos ── */}
+          {/* ── Materias y objetivos ── */}
           <p className="text-[11px] font-bold text-on-surface-muted tracking-widest uppercase mt-2">Materias y objetivos</p>
 
           <Field label="Materias actuales" hint="Presioná Enter para agregar">
@@ -321,7 +319,7 @@ export default function Perfil() {
                       color: active ? '#2563eb' : '#737686',
                     }}
                   >
-                    <span className="text-base">{o.emoji}</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{o.icon}</span>
                     <span className="text-left leading-tight">{o.label}</span>
                   </button>
                 )
@@ -329,7 +327,7 @@ export default function Perfil() {
             </div>
           </Field>
 
-          {/* ── Sección: Bio ── */}
+          {/* ── Bio ── */}
           <p className="text-[11px] font-bold text-on-surface-muted tracking-widest uppercase mt-2">Sobre vos</p>
 
           <Field label="Biografía corta">
@@ -345,35 +343,6 @@ export default function Perfil() {
               <span className="absolute bottom-2 right-3 text-[11px] font-semibold" style={{ color: bioColor }}>
                 {bio.length}/{MAX_BIO}
               </span>
-            </div>
-          </Field>
-
-          {/* ── Sección: Redes sociales ── */}
-          <p className="text-[11px] font-bold text-on-surface-muted tracking-widest uppercase mt-2">Redes sociales</p>
-
-          <Field label="Instagram">
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[14px] text-on-surface-muted font-medium">@</span>
-              <input
-                className="sm-input pl-8"
-                type="text"
-                value={instagram}
-                onChange={e => setInstagram(e.target.value.replace(/^@/, ''))}
-                placeholder="usuario"
-              />
-            </div>
-          </Field>
-
-          <Field label="LinkedIn">
-            <div className="relative">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-muted" style={{ fontSize: 18 }}>link</span>
-              <input
-                className="sm-input pl-9"
-                type="text"
-                value={linkedin}
-                onChange={e => setLinkedin(e.target.value)}
-                placeholder="linkedin.com/in/tu-perfil"
-              />
             </div>
           </Field>
 

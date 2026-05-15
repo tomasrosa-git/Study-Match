@@ -9,14 +9,16 @@ const AV = (i, color) => ({ inicial: i, color })
 const GRUPOS = [
   {
     nombre: 'Álgebra II',
-    icono: '📐',
+    icono: 'calculate',
     color: '#ede9fe',
+    iconColor: '#7c3aed',
     tiempo: 'Hoy, 14:30',
     miembros: 3,
     ultimo: 'Agustín: ¿Alguien resolvió el punto 4?',
     nuevos: 2,
     miembrosList: ['Agustín R.', 'Lucía M.', 'Mateo V.'],
     avatares: [AV('A','#6366f1'), AV('L','#ec4899'), AV('M','#f59e0b')],
+    aiResponder: { nombre: 'Agustín', initial: 'A', avatarColor: '#6366f1' },
     mensajes: [
       { from: 'Mateo',   nombre: 'Mateo',   avatar: 'M', avatarColor: '#f59e0b', text: 'Chicos, ¿para cuándo tienen que entregar la guía 3?', time: '13:40', date: 'Hoy' },
       { from: 'Lucía',   nombre: 'Lucía',   avatar: 'L', avatarColor: '#ec4899', text: 'El viernes antes del parcial. Yo ya hice los primeros 3 puntos 🙋‍♀️', time: '13:44', date: 'Hoy' },
@@ -30,14 +32,16 @@ const GRUPOS = [
   },
   {
     nombre: 'Cálculo II',
-    icono: '📊',
+    icono: 'bar_chart',
     color: '#dbeafe',
+    iconColor: '#1d4ed8',
     tiempo: 'Hace 5m',
     miembros: 5,
     ultimo: 'Carlos: ¿Nos juntamos mañana en la biblio?',
     nuevos: 0,
     miembrosList: ['Julia S.', 'Carlos T.', 'Ana P.', 'Rodrigo M.', 'Vos'],
     avatares: [AV('J','#2563eb'), AV('C','#10b981'), AV('+3','#8b5cf6')],
+    aiResponder: { nombre: 'Julia', initial: 'J', avatarColor: '#2563eb' },
     mensajes: [
       { from: 'Julia',   nombre: 'Julia',   avatar: 'J', avatarColor: '#2563eb',  text: 'Gente, el parcial es el VIERNES. Pánico total 😰', time: '09:10', date: 'Ayer' },
       { from: 'Carlos',  nombre: 'Carlos',  avatar: 'C', avatarColor: '#10b981',  text: 'Yo tengo dudas con integrales impropias, ¿eso entra?', time: '09:15', date: 'Ayer' },
@@ -50,14 +54,16 @@ const GRUPOS = [
   },
   {
     nombre: 'Sistemas Operativos',
-    icono: '💻',
+    icono: 'computer',
     color: '#dcfce7',
+    iconColor: '#15803d',
     tiempo: 'Ayer',
     miembros: 2,
     ultimo: 'Santiago: Pasen el PDF de la clase',
     nuevos: 0,
     miembrosList: ['Santiago B.', 'Valentina C.'],
     avatares: [AV('S','#ef4444'), AV('V','#06b6d4')],
+    aiResponder: { nombre: 'Santiago', initial: 'S', avatarColor: '#ef4444' },
     mensajes: [
       { from: 'Valentina', nombre: 'Valentina', avatar: 'V', avatarColor: '#06b6d4', text: '¿Para cuándo es el TP 2?', time: '15:00', date: 'Ayer' },
       { from: 'Santiago',  nombre: 'Santiago',  avatar: 'S', avatarColor: '#ef4444', text: 'Para el 20. Hay que implementar un scheduler con semáforos 😅', time: '15:05', date: 'Ayer' },
@@ -168,8 +174,8 @@ function GrupoCard({ grupo, onPress }) {
       style={{ boxShadow: '0 1px 6px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.04)' }}
       onClick={() => onPress(grupo)}>
       <div className="flex items-center gap-3 mb-2.5">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{ background: grupo.color }}>
-          {grupo.icono}
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: grupo.color }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 22, color: grupo.iconColor }}>{grupo.icono}</span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
@@ -221,7 +227,7 @@ function ChatItem({ chat, onPress }) {
 // ─── Main screen ─────────────────────────────────────────────────
 export default function Grupos() {
   const [tab, setTab] = useState('materias')
-  const [subView, setSubView] = useState(null)   // { tipo: 'grupo'|'chat', data: {...} }
+  const [subView, setSubView] = useState(null)
   const { setActiveTab } = useApp()
 
   // ── Group chat sub-view ──
@@ -231,9 +237,13 @@ export default function Grupos() {
       <ChatView
         initialMessages={g.mensajes}
         onBack={() => setSubView(null)}
+        aiEnabled
+        aiResponder={g.aiResponder}
         header={
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0" style={{ background: g.color }}>{g.icono}</div>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: g.color }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20, color: g.iconColor }}>{g.icono}</span>
+            </div>
             <div className="min-w-0">
               <p className="font-bold text-on-surface text-[14px] leading-tight">{g.nombre}</p>
               <p className="text-[11px] text-on-surface-muted">{g.miembros} miembros · {g.miembrosList.join(', ')}</p>
@@ -251,6 +261,8 @@ export default function Grupos() {
       <ChatView
         initialMessages={c.mensajes}
         onBack={() => setSubView(null)}
+        aiEnabled
+        aiResponder={{ nombre: c.nombre, img: c.img, initial: c.inicial, avatarColor: c.color }}
         header={
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="relative">
@@ -295,7 +307,9 @@ export default function Grupos() {
             </div>
             <div className="mt-4 rounded-2xl p-4 border border-blue-100" style={{ background: 'linear-gradient(135deg, #eff6ff, #dbeafe)' }}>
               <div className="flex items-start gap-3">
-                <div className="text-2xl">🔍</div>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#dbeafe' }}>
+                  <span className="material-symbols-outlined text-primary" style={{ fontSize: 24 }}>search</span>
+                </div>
                 <div className="flex-1">
                   <p className="font-bold text-primary text-[14px] mb-0.5">¿Buscas más compañeros?</p>
                   <p className="text-xs text-blue-700 mb-3 leading-relaxed">Hay 12 estudiantes nuevos de Álgebra II cerca de vos.</p>
