@@ -266,8 +266,10 @@ export default function ChatView({ header, initialMessages = [], onBack, aiEnabl
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
   }
 
+  const bottomNavOffset = 'calc(82px + env(safe-area-inset-bottom))'
+
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
+    <div className="flex flex-col flex-1 overflow-hidden" style={{ paddingBottom: bottomNavOffset }}>
       {/* Header */}
       <header className="flex items-center gap-3 px-4 py-3 bg-surface/95 backdrop-blur-md border-b border-outline/30 sticky top-0 z-10">
         <button

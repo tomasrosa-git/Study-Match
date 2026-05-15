@@ -1,4 +1,7 @@
 export default function PerfilDetalle({ match, onBack, onChat }) {
+  const ctaBottomOffset = 'calc(68px + env(safe-area-inset-bottom))'
+  const contentBottomPadding = 'calc(180px + env(safe-area-inset-bottom))'
+
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       {/* Back header */}
@@ -12,7 +15,7 @@ export default function PerfilDetalle({ match, onBack, onChat }) {
         <span className="font-bold text-on-surface text-[15px]">Perfil</span>
       </header>
 
-      <div className="flex-1 overflow-y-auto no-scroll pb-28">
+      <div className="flex-1 overflow-y-auto no-scroll" style={{ paddingBottom: contentBottomPadding }}>
         {/* Hero photo */}
         <div className="relative h-64">
           {match.img ? (
@@ -84,22 +87,14 @@ export default function PerfilDetalle({ match, onBack, onChat }) {
             </div>
           )}
 
-          {/* Disponibilidad */}
-          {match.disponibilidad && (
-            <div className="bg-white rounded-2xl p-4" style={{ boxShadow: '0 1px 6px rgba(0,0,0,.07)' }}>
-              <p className="text-[12px] font-bold text-on-surface-muted uppercase tracking-widest mb-2">Disponibilidad</p>
-              <div className="flex flex-wrap gap-2">
-                {match.disponibilidad.map(d => (
-                  <span key={d} className="bg-surface-container text-on-surface-muted rounded-xl px-3 py-1 text-[12px] font-medium">📅 {d}</span>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
       {/* Coordinar button */}
-      <div className="fixed bottom-[68px] left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5 pb-2 pt-3 bg-surface/95 backdrop-blur border-t border-outline/20">
+      <div
+        className="fixed left-1/2 -translate-x-1/2 w-full max-w-[430px] px-5 pb-2 pt-3 bg-surface/95 backdrop-blur border-t border-outline/20"
+        style={{ bottom: ctaBottomOffset }}
+      >
         <button
           onClick={onChat}
           className="w-full bg-primary text-white font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-primary-dark transition active:scale-95 text-[15px]"
