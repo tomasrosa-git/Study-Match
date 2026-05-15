@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 
 const PERFILES = [
@@ -139,10 +139,26 @@ export default function Explorar() {
   const dragging = useRef(false)
   const startX   = useRef(0)
   const startY   = useRef(0)
+  const cardRef  = useRef(null)
 
   const likeOpacity = drag.active && drag.x > 20  ? Math.min(drag.x / 80, 1) : 0
   const nopeOpacity = drag.active && drag.x < -20 ? Math.min(-drag.x / 80, 1) : 0
   const cardDragStyle = drag.active ? { transform: `translate(${drag.x}px,${drag.y}px) rotate(${drag.x * 0.07}deg)` } : {}
+
+  // Register non-passive touchmove so preventDefault blocks browser scroll,
+  // and update drag state directly without relying on React synthetic events.
+  useEffect(() => {
+    const el = cardRef.current
+    if (!el) return
+    const handler = (e) => {
+      if (!dragging.current) return
+      e.preventDefault()
+      const touch = e.touches[0]
+      setDrag({ x: touch.clientX - startX.current, y: touch.clientY - startY.current, active: true })
+    }
+    el.addEventListener('touchmove', handler, { passive: false })
+    return () => el.removeEventListener('touchmove', handler)
+  })
 
   const advance = useCallback(() => {
     setFly(null)
@@ -262,15 +278,17 @@ export default function Explorar() {
 
             {/* Main swipe card */}
             <div
+              ref={cardRef}
               className="absolute inset-0 cursor-grab active:cursor-grabbing select-none"
               style={{
                 zIndex: 1,
+                touchAction: 'none',
                 ...(fly ? FLY[fly] : {}),
                 ...(drag.active && !fly ? cardDragStyle : {}),
                 ...(!drag.active && !fly ? { transition: 'transform .32s cubic-bezier(.34,1.56,.64,1)' } : {}),
               }}
               onMouseDown={onDown} onMouseMove={onMove} onMouseUp={onUp} onMouseLeave={onUp}
-              onTouchStart={onDown} onTouchMove={onMove} onTouchEnd={onUp}
+              onTouchStart={onDown} onTouchEnd={onUp}
             >
               <img src={perfil.img} className="w-full h-full object-cover absolute inset-0" alt={perfil.nombre} draggable={false} />
 

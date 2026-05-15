@@ -32,6 +32,7 @@ body {
   align-items: flex-start;
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
 }
 
 #root {
@@ -42,6 +43,9 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
+  /* Safe area for notch phones */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .material-symbols-outlined {

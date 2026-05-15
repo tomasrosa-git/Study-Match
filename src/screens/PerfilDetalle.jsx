@@ -1,6 +1,4 @@
 export default function PerfilDetalle({ match, onBack, onChat }) {
-  const compatColor = match.compatibilidad >= 85 ? '#22c55e' : match.compatibilidad >= 70 ? '#f59e0b' : '#ef4444'
-
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
       {/* Back header */}
@@ -39,19 +37,13 @@ export default function PerfilDetalle({ match, onBack, onChat }) {
 
         <div className="px-5 pt-4 flex flex-col gap-4">
 
-          {/* Compatibilidad */}
-          <div className="bg-white rounded-2xl p-4" style={{ boxShadow: '0 1px 6px rgba(0,0,0,.07)' }}>
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-[13px] font-semibold text-on-surface">Compatibilidad</p>
-              <span className="text-lg font-extrabold" style={{ color: compatColor }}>{match.compatibilidad}%</span>
+          {/* Motivo del match */}
+          {match.motivoMatch && (
+            <div className="bg-primary/5 border border-primary/15 rounded-2xl px-4 py-3 flex items-start gap-2.5">
+              <span className="material-symbols-outlined fill-icon text-primary flex-shrink-0 mt-0.5" style={{ fontSize: 16 }}>check_circle</span>
+              <p className="text-[13px] text-primary font-medium leading-snug">{match.motivoMatch}</p>
             </div>
-            <div className="h-2 rounded-full bg-surface-container overflow-hidden">
-              <div className="h-full rounded-full" style={{ width: `${match.compatibilidad}%`, background: compatColor }} />
-            </div>
-            <p className="text-[12px] text-on-surface-muted mt-2">
-              {match.motivoMatch || 'Coincidencia en materias de estudio'}
-            </p>
-          </div>
+          )}
 
           {/* Materias */}
           <div className="bg-white rounded-2xl p-4" style={{ boxShadow: '0 1px 6px rgba(0,0,0,.07)' }}>

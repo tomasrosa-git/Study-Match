@@ -6,87 +6,137 @@ function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
 function generateAIResponse(userMessage) {
   const t = userMessage.toLowerCase()
 
-  if (/hola|buenas|buenas tardes|buenas noches|buen día/.test(t)) {
+  if (/\bhola\b|buenas|buen día|buen dia|buenas tardes|buenas noches|hey|ey\b/.test(t)) {
     return pick([
-      '¡Hola! ¿Cómo va el estudio? 😊',
-      '¡Buenas! ¿En qué te puedo ayudar hoy?',
-      '¡Hola! Qué bueno que estés por acá. ¿Arrancamos a repasar?',
-    ])
-  }
-  if (/parcial|examen|final|prueba/.test(t)) {
-    return pick([
-      '¡Entiendo! Los parciales generan mucha presión. ¿Qué temas entran? Podemos armar un plan de repaso juntos 📚',
-      '¿Cuándo es? Si me decís los temas, te doy una mano para organizarte.',
-      'Para los finales lo mejor es dividir el material por unidades y repasar de a poco. ¿Cuánto tiempo tenés?',
-    ])
-  }
-  if (/apunte|pdf|material|resumen|guía|gua/.test(t)) {
-    return pick([
-      'Tengo apuntes sobre ese tema. ¿Te los comparto por acá? 📎',
-      '¡Sí! Dame un momento que lo busco. ¿Necesitás todo o alguna unidad específica?',
-      'Tengo el resumen completo. Lo hice la semana pasada y está bastante prolijo 😄',
-    ])
-  }
-  if (/cundo|cuándo|horario|hora|juntamos|reunir|día|dias|días/.test(t)) {
-    return pick([
-      'Yo tengo disponibilidad tardes y fines de semana. ¿Cuándo te viene mejor?',
-      '¿Preferís de mañana o de tarde? Así coordino según mi horario 📅',
-      'Esta semana podría el jueves después de las 17. ¿Te sirve?',
-    ])
-  }
-  if (/gracias|dale|perfecto|ok|bárbaro|barbaro|genial|bueno/.test(t)) {
-    return pick([
-      '¡De nada! Cualquier duda más, avisame 😊',
-      '¡Genial! Nos vemos entonces. Éxitos en el estudio 🍀',
-      '¡Buenísimo! Sigamos así 💪',
-    ])
-  }
-  if (/duda|no entiendo|entend|difícil|difícil|complicado|cuesta/.test(t)) {
-    return pick([
-      'Contame qué no te queda claro, lo vemos juntos. A veces explicarlo en voz alta ayuda mucho.',
-      'Normal, es un tema que cuesta bastante. ¿Qué parte específicamente te traba?',
-      'Ese tema me costó también al principio. Hay un truco para entenderlo más fácil, te cuento...',
-    ])
-  }
-  if (/freud|lacan|psicoanalisis|psicoanálisis/.test(t)) {
-    return pick([
-      'Freud es denso pero una vez que agarrás el hilo se vuelve más claro. ¿Estás con la parte de los sueños o con la metapsicología?',
-      'Para Lacan recomiendo empezar por los seminarios más accesibles. ¿Tenés los apuntes de la cátedra?',
-    ])
-  }
-  if (/anatomía|anatomia|neuro|biología|biologia/.test(t)) {
-    return pick([
-      'Para Neuroanatomía lo mejor es estudiar con imágenes. ¿Tenés el atlas? Te mando el link si no lo conseguís.',
-      '¡Ese tema me encanta! Las guías de la cátedra B son muy buenas para repasar. ¿Las tenés?',
-    ])
-  }
-  if (/álgebra|algebra|cálculo|calculo|matemática|matematica/.test(t)) {
-    return pick([
-      'Para Álgebra lo clave es hacer muchos ejercicios. ¿Con qué tema tenés dificultades?',
-      'Cálculo se aprende practicando. Te recomiendo resolver las guías de años anteriores que siempre repiten ejercicios.',
-    ])
-  }
-  if (/biblio|biblioteca|facultad|fac/.test(t)) {
-    return pick([
-      '¡Dale, nos juntamos en la biblio! ¿A qué hora te viene bien?',
-      'La biblio siempre está llena al mediodía, mejor ir temprano o tarde. ¿Qué horario te queda?',
-    ])
-  }
-  if (/tp|trabajo práctico|trabajo practico/.test(t)) {
-    return pick([
-      'Para el TP podemos dividirnos las partes y después revisamos todo juntos. ¿Cuánto queda para la entrega?',
-      'Los TPs grupales son más llevaderos cuando cada uno toma una parte. ¿Empezamos a organizar?',
+      '¡Hola! ¿Cómo va el estudio? 😊 Contame en qué andás.',
+      '¡Buenas! Qué bueno saber de vos. ¿Qué temas tenés en mente hoy?',
+      '¡Hola! Me alegra que estemos en contacto. ¿Arrancamos a organizar algo? 📚',
+      '¡Hola! ¿Todo bien? ¿Hay algo puntual con lo que te pueda dar una mano?',
     ])
   }
 
-  // Respuestas genéricas contextuales
+  if (/parcial|examen|final|prueba|evaluaci/.test(t)) {
+    return pick([
+      'Entiendo la presión, los parciales son intensos. ¿Cuánto tiempo te queda y qué temas entran? Con eso armamos un plan de repaso concreto 📋',
+      '¿Cuándo es? Si me contás los temas principales, te ayudo a priorizar qué estudiar primero y qué podés dejar para el final.',
+      'Para los finales lo mejor es dividir el material en bloques y repasar de a poco. ¿Tenés resúmenes o empezamos desde el principio?',
+      'La clave para los parciales es no estudiar todo junto el último día. ¿Cuántos días te quedan? Hacemos un cronograma juntos.',
+      '¡Vamos que se puede! ¿Con qué unidad querés empezar? A veces conviene arrancar por la que más te cuesta para sacarla de encima.',
+    ])
+  }
+
+  if (/apunte|pdf|material|resumen|guía|guia|archivo|doc|carpeta/.test(t)) {
+    return pick([
+      'Tengo apuntes de ese tema, te los comparto ahora mismo. ¿Querés todo el material o alguna unidad en particular? 📎',
+      '¡Sí, tengo! Dame un momento que lo busco. ¿Necesitás el resumen completo o solo los puntos clave?',
+      'Tengo el resumen que armé para el parcial pasado, está bastante completo. ¿Te sirve si lo dividimos por unidades para que sea más manejable?',
+      'Claro, comparto todo lo que tengo. Eso sí, avisame si algo no se entiende bien y lo aclaramos juntos 😄',
+    ])
+  }
+
+  if (/cuando|cuándo|horario|hora|juntamos|reunir|día|dias|días|semana|disponib|libre/.test(t)) {
+    return pick([
+      'Yo tengo disponibilidad tardes y fines de semana. ¿Qué días te quedan libres?',
+      '¿Preferís de mañana o de tarde? Así coordino mejor según mis clases. También podría ser por videollamada si te queda más cómodo 📅',
+      'Esta semana podría el jueves después de las 17 o el sábado a la mañana. ¿Te viene alguno de los dos?',
+      '¿Qué tal si nos juntamos esta semana para repasar? Yo me adapto al horario que mejor te quede, tengo bastante flexibilidad.',
+    ])
+  }
+
+  if (/gracias|muchas gracias|te lo agradezco|genial|perfecto|bárbaro|barbaro|excelente|dale|ok\b|buenísimo|buenisimo/.test(t)) {
+    return pick([
+      '¡De nada, para eso estamos! Si surge cualquier otra duda, no dudes en escribirme 😊',
+      '¡Buenísimo! Nos vemos entonces. ¡Mucho éxito con el estudio! 🍀',
+      '¡Genial! Sigamos así, con constancia se llega. ¿Hay algo más que quieras repasar antes de que nos juntemos? 💪',
+      '¡Todo bien! Avisame cuando quieras y seguimos coordinando 🙌',
+    ])
+  }
+
+  if (/no entiendo|no entend|no me queda|duda|confus|difícil|dificil|complicado|cuesta|no sé|no se|perdid/.test(t)) {
+    return pick([
+      'Contame qué parte específicamente no te queda, lo analizamos juntos. A veces con un ejemplo concreto se entiende mucho mejor.',
+      'Normal que cueste, es un tema que tiene bastante profundidad. ¿Qué parte te traba más: la teórica o los ejercicios prácticos?',
+      'Ese tema me costó también al principio. Hay una manera de verlo que lo hace más claro, ¿querés que te explique cómo lo entendí yo?',
+      '¡No te preocupes! Las dudas son parte del proceso. Explicame qué tenés entendido hasta ahora y vemos desde dónde seguir.',
+    ])
+  }
+
+  if (/freud|lacan|jung|psicoanálisis|psicoanalisis|inconsciente|aparato psíquico/.test(t)) {
+    return pick([
+      'Freud es denso pero fascinante una vez que agarrás el hilo. ¿Estás con la parte de los sueños, la metapsicología o los casos clínicos? Así te doy recursos más específicos.',
+      'Para Lacan lo mejor es no empezar por los seminarios más técnicos. ¿Tenés los apuntes de la cátedra? Hay resúmenes que lo hacen mucho más accesible.',
+      'El psicoanálisis es de esos temas que se entienden mejor leyendo en voz alta y discutiéndolo. ¿Qué texto puntual estás trabajando?',
+      'Jung y Freud tienen diferencias importantes que siempre preguntan en el parcial. ¿Querés que repasemos los puntos clave de comparación? 📖',
+    ])
+  }
+
+  if (/neuroanatomía|neuroanatomia|neuro|anatomía|anatomia|histolog|célula|biolog/.test(t)) {
+    return pick([
+      'Para Neuroanatomía lo mejor es estudiar con imágenes y esquemas. ¿Tenés el atlas de la cátedra? Si no, te puedo pasar un link muy bueno.',
+      '¡Ese tema me resulta muy interesante! Las guías de la cátedra B están muy bien organizadas. ¿Las tenés o te las consigo?',
+      'Lo importante en Anatomía es entender la lógica estructural, no memorizar de golpe. ¿Estás con algún sistema en particular?',
+      'Neuroanatomía tiene mucho para visualizar. ¿Estudiás con mapas conceptuales o preferís repasar de texto? Así te ayudo de la manera que más te sirva.',
+    ])
+  }
+
+  if (/álgebra|algebra|cálculo|calculo|matemática|matematica|estadística|estadistica|ecuaci|derivad|integral/.test(t)) {
+    return pick([
+      'Para Álgebra lo clave es hacer muchos ejercicios, la teoría sola no alcanza. ¿Con qué tema tenés dificultades ahora mismo?',
+      'Cálculo se aprende practicando. Te recomiendo resolver las guías de años anteriores, siempre repiten tipos de ejercicios similares.',
+      'Estadística es mucho más llevadera cuando entendés para qué sirve cada herramienta. ¿Estás con inferencia, probabilidad o análisis descriptivo?',
+      '¿Querés que hagamos ejercicios juntos? Con los de práctica se ve mucho mejor que solo leyendo la teoría. ¿Cuándo te viene bien?',
+    ])
+  }
+
+  if (/biblio|biblioteca|facultad|fac|aula|campus|puán|puan|ciudad universitaria/.test(t)) {
+    return pick([
+      '¡Dale, nos juntamos en la biblio! ¿A qué hora te viene bien? Yo prefiero ir temprano antes de que se llene.',
+      'La biblio siempre está llena al mediodía, mejor ir temprano a las 9 o después de las 17. ¿Cuál te queda mejor?',
+      '¿Preferís estudiar en la facultad o en algún café cerca? Para ciertas materias prefiero un lugar más tranquilo donde se pueda hablar.',
+    ])
+  }
+
+  if (/tp|trabajo práctico|trabajo practico|entrega|informe|monografía|monografia/.test(t)) {
+    return pick([
+      'Para el TP podemos dividirnos las secciones y después revisamos todo juntos para que quede coherente. ¿Cuánto queda para la entrega?',
+      'Los trabajos grupales son más llevaderos cuando cada uno toma una parte clara. ¿Tenemos el tema definido o todavía estamos en eso?',
+      '¿Cuántas páginas tiene que tener? Si me contás los requisitos, organizamos las tareas para que no se acumule todo al final.',
+    ])
+  }
+
+  if (/grupo|grupal|equipo|compañero|compañera|estudiar juntos/.test(t)) {
+    return pick([
+      'Estudiar en grupo ayuda un montón, sobre todo para materias con mucho contenido. ¿Tenés otros compañeros que quieran sumarse o somos nosotros dos?',
+      '¡Me parece bien! Los grupos pequeños de 2 a 4 personas suelen funcionar mejor. ¿Qué días se juntaría el grupo?',
+      'Si armamos un grupo, podemos dividir el material y que cada uno explique su parte. Es la forma más eficiente de cubrir todo antes del parcial.',
+    ])
+  }
+
+  if (/cansad|estresad|agotad|no puedo más|no puedo mas|abrumad|ansiedad|nervios/.test(t)) {
+    return pick([
+      'Entiendo, la facultad puede ser muy intensa. Tomarse un descanso corto a veces hace más que seguir a la fuerza. ¿Cuánto tiempo hace que estás estudiando?',
+      'Normal sentirse así, es mucho material. Lo importante es ir de a poco sin quemarse. ¿Querés que armemos un plan más manejable para los próximos días?',
+      'El estrés antes de los parciales es muy común, no estás solo/a en esto. ¿Hablaste con alguien de la facultad? A veces el apoyo del grupo ayuda bastante.',
+    ])
+  }
+
+  if (/qué tal|cómo estás|como estas|cómo vas|como vas|bien\?/.test(t)) {
+    return pick([
+      '¡Bien, gracias! Con muchas ganas de estudiar 😄 ¿Y vos? ¿Cómo van las materias?',
+      '¡Todo bien por acá! Bastante ocupada con las cursadas pero con energía. ¿Cómo te va a vos?',
+      'Muy bien, gracias por preguntar. ¿Cómo estás con el estudio? ¿Hay algo que te esté costando más?',
+    ])
+  }
+
+  // Respuestas genéricas contextuales mejoradas
   return pick([
-    '¡Entendido! ¿Querés que repasemos ese tema juntos? 📖',
-    'Tiene sentido. ¿Hay algo más en lo que te pueda ayudar para el estudio?',
-    'Bien! La constancia es clave para aprender bien. ¿Cuándo estudiamos?',
-    'De acuerdo. Avisame cuando quieras coordinar 😊',
-    '¡Buena idea! Podemos armar una sesión de estudio esta semana.',
-    'Interesante. ¿Tenés los materiales o necesitás que te pase algo?',
+    '¡Entendido! ¿Querés que repasemos ese tema juntos? Puedo ayudarte a organizarte mejor 📖',
+    'Tiene sentido lo que decís. ¿Qué más necesitás para avanzar con el estudio? Puedo pasarte material o coordinar una sesión.',
+    'La constancia es clave para aprender bien. ¿Cuándo te viene mejor juntarnos para estudiar?',
+    'De acuerdo. ¡Avisame cuando quieras coordinar y lo organizamos! 😊',
+    '¡Buena idea! ¿Qué tal si esta semana armamos una sesión de estudio? Así aprovechamos el tiempo antes del parcial.',
+    'Interesante punto. ¿Tenés los materiales necesarios o te consigo algo? No quiero que te quedes sin recursos.',
+    'Me parece bien. Si tenés alguna duda puntual sobre el tema, también podemos resolverla por acá antes de juntarnos.',
   ])
 }
 
